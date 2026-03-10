@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit a Support Ticket — Basilur Tea Export IT Help Desk</title>
+  <meta name="description"
+    content="Submit an IT support request at Basilur Tea Export. Our IT team will respond promptly to resolve your technical issues." />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+
+<body>
+
+  <nav>
+    <div class="nav-brand">
+      <div class="nav-logo"></div>
+      <div class="nav-title">Basilur Tea <span>Export</span></div>
+    </div>
+    <div class="nav-links" id="navLinks"></div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile-menu" id="navMobileMenu"></div>
+
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-welcome" id="heroWelcome" style="display:none;">Welcome, <span id="userNameText">Guest</span>!
+      </div>
+      <div class="hero-tag">IT Help Desk</div>
+      <h1>Submit a Support Request</h1>
+      <p>Report technical issues and our IT team will respond soon... </p>
+    </div>
+  </div>
+
+  <main>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🎟️</div>
+        <div>
+          <h2>New Support Ticket</h2>
+          <p>All fields marked with * are required</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="errorAlert" class="alert error" role="alert">
+          <span>⚠️ </span>
+          <span id="errorMsg">Please fill in all required fields.</span>
+        </div>
+
+        <form id="ticketForm" novalidate>
+
+          <!-- SECTION: Requester -->
+          <div class="form-section">
+            <div class="section-label">Requester Information</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="inputName">Full Name <span class="req">*</span></label>
+                <input type="text" id="inputName" name="name" placeholder="e.g. John Smith" required
+                  autocomplete="name" />
+                <span class="field-note" id="nameChangeNote"
+                  style="display:none;font-size:11px;color:var(--muted);margin-top:4px;display:none;">✏️ Editing your
+                  name will update your profile.</span>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail">Email Address</label>
+                <input type="email" id="inputEmail" name="email" readonly
+                  style="background:var(--off-white);cursor:default;color:var(--text-light);" autocomplete="email" />
+              </div>
+              <div class="form-group full">
+                <label for="inputDept">Department <span class="req">*</span></label>
+                <select id="inputDept" name="department" required>
+                  <option value="">Select your department</option>
+                  <option>Marketing</option>
+                  <option>Branding</option>
+                  <option>LAB</option>
+                  <option>Graphics</option>
+                  <option>Finance</option>
+                  <option>HR</option>
+                  <option>Operations</option>
+                  <option>IT</option>
+                  <option>BTE</option>
+                  <option>Purchasing</option>
+                  <option>Quality Assurance</option>
+                  <option>Shipping</option>
+                  <option>Stores</option>
+                  <option>Tea</option>
+                  <option>Production</option>
+                  <option>Engineering</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION: Issue Details -->
+          <div class="form-section">
+            <div class="section-label">Issue Details</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="inputCategory">Issue Category <span class="req">*</span></label>
+                <select id="inputCategory" name="category" required>
+                  <option value="">Select a category</option>
+                  <option>Hardware</option>
+                  <option>Software</option>
+                  <option>Network / Connectivity</option>
+                  <option>Printer / Scanner</option>
+                  <option>Email / Communication</option>
+                  <option>Account / Access</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Priority Level <span class="req">*</span></label>
+                <div class="priority-group" role="group" aria-label="Priority Level">
+                  <button type="button" class="priority-btn low" data-val="Low" id="priorityLow">
+                    <div class="dot"></div>Low
+                  </button>
+                  <button type="button" class="priority-btn medium" data-val="Medium" id="priorityMedium">
+                    <div class="dot"></div>Medium
+                  </button>
+                  <button type="button" class="priority-btn high" data-val="High" id="priorityHigh">
+                    <div class="dot"></div>High
+                  </button>
+                </div>
+                <input type="hidden" name="priority" id="priorityVal" required />
+              </div>
+              <div class="form-group full">
+                <label for="inputDesc">Problem Description <span class="req">*</span></label>
+                <textarea id="inputDesc" name="description"
+                  placeholder="Describe the issue in detail. Include any error messages, when it started, and what you were doing at the time..."
+                  required></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION: Attachments -->
+          <div class="form-section">
+            <div class="section-label">Supporting Files</div>
+            <label style="margin-bottom:8px;">Screenshot or Supporting File
+              <span style="color:var(--muted);font-weight:400;">&nbsp;(optional)</span>
+            </label>
+            <div class="file-drop" id="fileDrop">
+              <input type="file" name="screenshot" id="fileInput" accept="image/*,.pdf"
+                aria-label="Upload screenshot or supporting file" />
+              <div class="file-drop-icon">📎</div>
+              <p><strong>Click to upload</strong> or drag and drop</p>
+              <small>PNG, JPG, GIF, PDF — up to 10 MB</small>
+              <div class="file-name" id="fileName"></div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <p class="form-note">💡 You'll receive a confirmation email with your ticket ID after submission.</p>
+            <button type="submit" class="btn-submit" id="submitBtn">
+              <span id="submitText">Submit Ticket</span>
+              <div class="spinner" id="spinner"></div>
+              <span id="submitArrow">→</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- PAGE LOADER (Full Screen White) -->
+  <div class="page-loader-overlay" id="pageLoaderOverlay">
+    <div class="page-loader-content">
+      <img src="Live%20chatbot.gif" alt="Loading..." />
+      <h3>Loading...</h3>
+      <p>Please wait while we set things up.</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const isReload = performance.getEntriesByType("navigation")[0].type === 'reload';
+      const isLoggedIn = sessionStorage.getItem('bte_user');
+      if (!isLoggedIn || isReload) {
+        document.getElementById('pageLoaderOverlay').classList.add('show');
+      }
+    })();
+  </script>
+
+
+  <!-- SUCCESS MODAL -->
+  <div class="success-overlay" id="successOverlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+    <div class="success-card">
+      <span class="success-icon">✅</span>
+      <h3 id="successTitle">Ticket Submitted!</h3>
+      <p>Your request has been received and our IT team has been notified. Your unique ticket ID is:</p>
+      <div class="ticket-id-badge" id="displayTicketId">TKT-000000</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:24px;">Save this ID to track your ticket status at any
+        time.</p>
+      <div>
+        <a href="track.html" class="btn-outline primary">🔍 Track My Ticket</a>
+        <a href="#" class="btn-outline secondary" onclick="resetForm(); return false;">+ Submit Another</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/cache_manager.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/submit_ticket.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      const loader = document.getElementById('pageLoaderOverlay');
+      if (loader && loader.classList.contains('show')) {
+        setTimeout(() => {
+          loader.classList.remove('show');
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+
+</html>

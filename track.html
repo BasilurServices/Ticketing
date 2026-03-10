@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Your Ticket — Basilur Tea Export IT Help Desk</title>
+  <meta name="description"
+    content="Track the status of your IT support request at Basilur Tea Export. Enter your ticket ID to view current progress, technician updates, and resolution details." />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/track.css" />
+</head>
+
+<body>
+
+  <nav>
+    <div class="nav-brand">
+      <div class="nav-logo"></div>
+      <div class="nav-title">Basilur Tea <span>Export</span></div>
+    </div>
+    <div class="nav-links" id="navLinks"></div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile-menu" id="navMobileMenu"></div>
+
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-welcome" id="heroWelcome" style="display:none;">Welcome, <span id="userNameText">Guest</span>!
+      </div>
+      <div class="hero-tag">My Tickets</div>
+      <h1>Track Your Support Requests</h1>
+      <p>All your IT support tickets are shown below. Click any ticket to see full details, Support Engineer notes, and
+        resolution updates.</p>
+    </div>
+  </div>
+
+  <main>
+    <!-- User banner -->
+    <div class="user-banner" id="userBanner" style="display:none;">
+      <div class="user-banner-avatar" id="bannerAvatar">?</div>
+      <div class="user-banner-info">
+        <p><strong id="bannerName">—</strong></p>
+        <p id="bannerEmail" style="font-size:12px;">—</p>
+      </div>
+      <div style="margin-left:auto;">
+        <a href="index.html" class="btn-outline primary" style="font-size:12px;padding:6px 14px;">+ New Ticket</a>
+      </div>
+    </div>
+
+    <!-- Tickets list header -->
+    <div class="card" id="myTicketsHeader" style="display:none;">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <h2>My Tickets</h2>
+          <p id="ticketCountLabel">Loading your tickets...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Default state -->
+    <div class="card" id="stateEmpty" style="display:none;">
+      <div class="card-body">
+        <div class="state-empty">
+          <div class="state-icon">📋</div>
+          <div class="state-title">No Tickets Yet</div>
+          <div class="state-desc">You haven't submitted any IT support tickets yet. <a href="index.html"
+              style="color:var(--blue);font-weight:500;">Submit your first ticket</a> and it will appear here.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="card" id="stateLoading" style="display:none;">
+      <div class="card-body">
+        <div class="state-loading">
+          <div class="state-icon">⏳</div>
+          <div class="state-title">Looking up your ticket...</div>
+          <div class="loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div class="card" id="stateError" style="display:none;">
+      <div class="card-body">
+        <div class="state-error">
+          <div class="state-icon">⚠️</div>
+          <div class="state-title">Could Not Load Tickets</div>
+          <div class="state-desc">There was a problem loading your tickets. Please check your connection and <a href=""
+              onclick="location.reload();return false;" style="color:var(--blue);font-weight:500;">try again</a>.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tickets list (my tickets) -->
+    <div id="myTicketsList"></div>
+
+    <!-- Ticket detail view (single ticket expanded) -->
+    <div id="ticketResult">
+      <div class="ticket-header" id="ticketHeaderEl">
+        <div>
+          <div class="ticket-id-label">Ticket ID</div>
+          <div class="ticket-id" id="resTicketId">—</div>
+        </div>
+        <div class="status-badge" id="resStatusBadge">Open</div>
+      </div>
+      <div class="ticket-body">
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Employee</label>
+            <div class="val" id="resName">—</div>
+          </div>
+          <div class="info-item">
+            <label>Department</label>
+            <div class="val" id="resDept">—</div>
+          </div>
+          <div class="info-item">
+            <label>Category</label>
+            <div class="val" id="resCat">—</div>
+          </div>
+          <div class="info-item">
+            <label>Priority</label>
+            <div class="val" id="resPriority">—</div>
+          </div>
+          <div class="info-item">
+            <label>Submitted</label>
+            <div class="val" id="resDate">—</div>
+          </div>
+          <div class="info-item">
+            <label>Assigned Support Engineer</label>
+            <div class="val" id="resTech">—</div>
+          </div>
+        </div>
+
+        <div class="desc-block">
+          <h4>Problem Description</h4>
+          <p id="resDesc">—</p>
+        </div>
+
+        <div class="screenshot-block" id="screenshotBlock" style="display:none;">
+          <h4>Supporting File</h4>
+          <a href="#" class="screenshot-link" id="screenshotLink" target="_blank" rel="noopener">
+            📎 View Uploaded Screenshot
+          </a>
+        </div>
+
+        <div class="resolution-block" id="resolutionBlock" style="display:none;">
+          <h4>✅ Resolution</h4>
+          <p id="resResolution">—</p>
+        </div>
+
+        <div class="timeline-block">
+          <h4>Activity Timeline</h4>
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- PAGE LOADER (Full Screen White) -->
+  <div class="page-loader-overlay" id="pageLoaderOverlay">
+    <div class="page-loader-content">
+      <img src="Live%20chatbot.gif" alt="Loading..." />
+      <h3>Loading...</h3>
+      <p>Please wait while we set things up.</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const isReload = performance.getEntriesByType("navigation")[0].type === 'reload';
+      const isLoggedIn = sessionStorage.getItem('bte_user');
+      if (!isLoggedIn || isReload) {
+        document.getElementById('pageLoaderOverlay').classList.add('show');
+      }
+    })();
+  </script>
+
+  <script src="js/config.js"></script>
+  <script src="js/cache_manager.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/track_ticket.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      const loader = document.getElementById('pageLoaderOverlay');
+      if (loader && loader.classList.contains('show')) {
+        setTimeout(() => {
+          loader.classList.remove('show');
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+
+</html>

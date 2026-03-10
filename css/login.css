@@ -1,0 +1,487 @@
+/* ============================================================
+   BASILUR TEA EXPORT — Login Page Styles
+   File: css/login.css
+   ============================================================ */
+
+/* ── FULL-SCREEN LOGIN LAYOUT ─────────────────────────────── */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0B1D3A 0%, #162B50 50%, #1E3A6E 100%);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative rings */
+.login-page::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 500px;
+    height: 500px;
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.login-page::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 360px;
+    height: 360px;
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* ── LOGIN CARD ───────────────────────────────────────────── */
+.login-card {
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 48px 44px 44px;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    z-index: 10;
+    animation: cardIn 0.4s ease;
+}
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ── BRAND HEADER ─────────────────────────────────────────── */
+.login-brand {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.login-logo {
+    width: 64px;
+    height: 64px;
+    background-image: url('../logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 0 auto 16px;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+}
+
+.login-company {
+    font-family: 'Barlow', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+}
+
+.login-company span {
+    color: var(--blue);
+}
+
+.login-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+}
+
+/* ── DIVIDER ──────────────────────────────────────────────── */
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.login-divider span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+/* ── FORM ─────────────────────────────────────────────────── */
+.login-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+.login-input-wrap {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.login-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 17px;
+    pointer-events: none;
+}
+
+.login-input {
+    width: 100%;
+    padding: 13px 14px 13px 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--off-white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.login-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    background: #fff;
+}
+
+.login-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    line-height: 1.5;
+}
+
+/* ── CONTINUE BUTTON ─────────────────────────────────────── */
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+}
+
+.login-btn:hover:not(:disabled) {
+    background: #1D4ED8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+}
+
+.login-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.login-btn-secondary {
+    background: transparent;
+    color: var(--blue);
+    border: 1.5px solid var(--border);
+    margin-top: 10px;
+}
+
+.login-btn-secondary:hover:not(:disabled) {
+    background: var(--off-white);
+    transform: none;
+    box-shadow: none;
+}
+
+/* ── ERROR MESSAGE ────────────────────────────────────────── */
+.login-error {
+    display: none;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+/* ── NAME STEP (hidden initially) ────────────────────────── */
+#nameStep {
+    display: none;
+}
+
+.name-step-info {
+    background: rgba(37, 99, 235, 0.07);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+}
+
+.name-step-info p {
+    font-size: 13px;
+    color: var(--text-light);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.name-step-info strong {
+    color: var(--blue);
+    font-weight: 600;
+}
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+.login-footer {
+    text-align: center;
+    margin-top: 28px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+}
+
+/* ── NAV USER PILL (all pages) ────────────────────────────── */
+.nav-user-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px 4px 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: default;
+    margin-left: 4px;
+}
+
+.nav-avatar {
+    width: 28px;
+    height: 28px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.nav-user-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-logout-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    border-radius: 6px;
+    color: #f87171;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'IBM Plex Sans', sans-serif;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.nav-logout-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: #f87171;
+    color: #fca5a5;
+}
+
+/* ── SPINNER (login) ──────────────────────────────────────── */
+.login-spinner {
+    width: 17px;
+    height: 17px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+    flex-shrink: 0;
+}
+
+/* ── MY TICKETS BANNER (track page) ──────────────────────── */
+.user-banner {
+    background: var(--white);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(11, 29, 58, 0.08);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.user-banner-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.user-banner-info p {
+    font-size: 13px;
+    color: var(--text-light);
+    margin: 0;
+}
+
+.user-banner-info strong {
+    color: var(--text);
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 500px) {
+    .login-card {
+        padding: 36px 24px 32px;
+    }
+
+    .nav-user-name {
+        display: none;
+    }
+}
+
+/* ── LOADING OVERLAY ──────────────────────────────────────── */
+.success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 29, 58, 0.8);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.success-overlay.show {
+    display: flex;
+}
+
+.success-card {
+    background: white;
+    border-radius: 20px;
+    padding: 52px 44px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+    animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ── PAGE LOADER (Full Screen White) ───────────────────────── */
+.page-loader-overlay {
+    position: fixed;
+    inset: 0;
+    background: #FFFFFF;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.page-loader-overlay.show {
+    display: flex;
+}
+
+.page-loader-content img {
+    width: 520px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.page-loader-content h3 {
+    font-family: 'Barlow', sans-serif;
+    font-size: 24px;
+    color: var(--text);
+    margin: 0 0 8px;
+}
+
+.page-loader-content p {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0;
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In — Basilur Tea Export IT Help Desk</title>
+    <meta name="description"
+        content="Sign in to the Basilur Tea Export IT Help Desk to submit and track your IT support requests." />
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/login.css" />
+</head>
+
+<body class="login-page">
+
+    <div class="login-card">
+
+        <!-- Brand -->
+        <div class="login-brand">
+            <div class="login-logo"></div>
+            <div class="login-company">Basilur Tea <span>Export</span></div>
+            <div class="login-subtitle">IT Help Desk — Employee Portal</div>
+        </div>
+
+        <!-- Error -->
+        <div id="loginError" class="login-error" role="alert"></div>
+
+        <!-- ── STEP 1: Email ─────────────────────────── -->
+        <div id="emailStep">
+            <div class="login-divider"><span>Sign In to Continue</span></div>
+
+            <label class="login-label" for="loginEmail">Your Work Email</label>
+            <div class="login-input-wrap">
+                <span class="login-input-icon">✉️</span>
+                <input type="email" id="loginEmail" class="login-input" placeholder="yourname@basilurtea.com"
+                    autocomplete="email" aria-label="Work email address" />
+            </div>
+            <p class="login-hint">Enter your company email to access the IT Help Desk.</p>
+
+            <button class="login-btn" id="continueBtn" onclick="handleLogin()">
+                <div class="login-spinner" id="loginSpinner"></div>
+                <span id="continueBtnText">Continue →</span>
+            </button>
+        </div>
+
+        <!-- ── STEP 2: New User Name ─────────────────── -->
+        <div id="nameStep">
+            <div class="login-divider"><span>Complete Your Profile</span></div>
+
+            <div class="name-step-info">
+                <p>We don't have an account for <strong id="loginEmailDisplay"></strong> yet. Please enter your full
+                    name to
+                    create your profile.</p>
+            </div>
+
+            <label class="login-label" for="newUserName">Your Full Name</label>
+            <div class="login-input-wrap">
+                <span class="login-input-icon">👤</span>
+                <input type="text" id="newUserName" class="login-input" placeholder="e.g. John Smith"
+                    autocomplete="name" aria-label="Full name" onkeydown="if(event.key==='Enter') handleRegister()" />
+            </div>
+            <p class="login-hint" style="margin-bottom:20px;">This name will appear on all your support tickets.</p>
+
+            <button class="login-btn" id="registerBtn" onclick="handleRegister()">
+                <div class="login-spinner" id="loginSpinner2"></div>
+                <span>Create Account & Continue →</span>
+            </button>
+            <button class="login-btn login-btn-secondary" onclick="goBackToEmail()">
+                ← Use a different email
+            </button>
+        </div>
+
+        <!-- ── STEP 3: Password ──────────────────────── -->
+        <div id="passwordStep" style="display: none;">
+            <div class="login-divider"><span>Security Check</span></div>
+
+            <div class="name-step-info">
+                <p>Hello <strong id="loginNameDisplay"></strong>. Please enter your password to continue to the Admin
+                    Panel.</p>
+            </div>
+
+            <label class="login-label" for="loginPassword">Password</label>
+            <div class="login-input-wrap">
+                <span class="login-input-icon">🔒</span>
+                <input type="password" id="loginPassword" class="login-input" placeholder="••••••••"
+                    autocomplete="current-password" aria-label="Password"
+                    onkeydown="if(event.key==='Enter') handlePasswordVerify()" />
+            </div>
+            <p class="login-hint" style="margin-bottom:20px;">Admins and technicians are required to use a password.</p>
+
+            <button class="login-btn" id="passwordBtn" onclick="handlePasswordVerify()">
+                <div class="login-spinner" id="loginSpinner3"></div>
+                <span>Verify & Sign In →</span>
+            </button>
+            <button class="login-btn login-btn-secondary" onclick="goBackToEmail()">
+                ← Back
+            </button>
+        </div>
+
+    </div>
+
+    <div class="login-footer">
+        &copy; 2025 Basilur Tea Export · IT Help Desk
+    </div>
+
+    <!-- PAGE LOADER (Full Screen White) -->
+    <div class="page-loader-overlay" id="pageLoaderOverlay">
+        <div class="page-loader-content">
+            <img src="Live%20chatbot.gif" alt="Loading..." />
+            <h3>Loading...</h3>
+            <p>Please wait while we set things up.</p>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const isReload = performance.getEntriesByType("navigation")[0].type === 'reload';
+            const isLoggedIn = sessionStorage.getItem('bte_user');
+            if (!isLoggedIn || isReload) {
+                document.getElementById('pageLoaderOverlay').classList.add('show');
+            }
+        })();
+    </script>
+
+
+    <script src="js/config.js"></script>
+    <script src="js/cache_manager.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/login.js"></script>
+    <script>
+        window.addEventListener('load', function () {
+            const loader = document.getElementById('pageLoaderOverlay');
+            if (loader && loader.classList.contains('show')) {
+                setTimeout(() => {
+                    loader.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+
+</html>
