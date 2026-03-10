@@ -401,12 +401,93 @@
 
 /* ── RESPONSIVE ───────────────────────────────────────────── */
 @media (max-width: 500px) {
+    .login-page {
+        padding: 1.5rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Ensure horizontal centering */
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .login-page::before,
+    .login-page::after {
+        display: none;
+    }
+
     .login-card {
-        padding: 36px 24px 32px;
+        width: 100%;
+        max-width: 100%;
+        /* Allow it to fill the width */
+        margin: 0 auto;
+        /* Force automatic margins for centering */
+        padding: 32px 20px 28px;
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        box-sizing: border-box;
+    }
+
+    .login-brand {
+        margin-bottom: 24px;
+        width: 100%;
+    }
+
+    .login-logo {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 12px;
+        /* Re-add centered margin */
+    }
+
+    .login-company {
+        font-size: 20px;
+    }
+
+    .login-subtitle {
+        font-size: 12px;
+    }
+
+    .login-divider {
+        margin: 0 0 24px;
+        gap: 8px;
+    }
+
+    .login-input {
+        font-size: 16px;
+        padding: 12px 12px 12px 42px;
+    }
+
+    .login-btn {
+        padding: 13px;
+        font-size: 16px;
     }
 
     .nav-user-name {
         display: none;
+    }
+
+    .login-footer {
+        width: 100%;
+        margin: 24px auto 0;
+        text-align: center;
+        font-size: 11px;
+    }
+
+    .page-loader-content img {
+        width: 100%;
+        max-width: 260px;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-card {
+        padding: 24px 16px 20px;
+    }
+
+    .login-company {
+        font-size: 18px;
     }
 }
 
