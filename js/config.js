@@ -4,7 +4,7 @@
  */
 const CONFIG = {
     // 1. Paste your Google Apps Script URL here:
-    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwJ-KmTbhvria6ksL59lSJSVbx-r0Xh0MgahqlMfwWCDLGvIgaPKe0HS1ZGfnZujqzM/exec',
+    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxGRwcDpwdtsYYXnPL03yBQPIL1oUVlcGiL5OrV0YfEJAQCDzeRM7IW026T5E3KQnbn/exec',
 
     // 2. Admin password (for demonstration purposes)
     ADMIN_PASSWORD: 'admin123',
@@ -19,4 +19,5 @@ const CONFIG = {
         'Quality Assurance', 'Sales', 'Stores', 'Tea', 'Technology'
     ]
 };
+
 
