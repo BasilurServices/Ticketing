@@ -46,10 +46,11 @@ const USER_COL = {
   NAME: 2,
   ROLE: 3,       // 'admin' or 'normal'
   DEPARTMENT: 4,
-  PASSWORD: 5
+  PASSWORD: 5,
+  MOBILE: 6
 };
 
-const USER_HEADERS = ['Email', 'Name', 'Role', 'Department', 'Password'];
+const USER_HEADERS = ['Email', 'Name', 'Role', 'Department', 'Password', 'Mobile'];
 
 // ─── INITIALIZATION (MANUAL SETUP) ──────────────────────────
 
@@ -112,7 +113,7 @@ function manualSetup() {
     usersSheet.autoResizeColumns(1, USER_HEADERS.length);
     result += "✅ Created Sheet: \"" + CONFIG.USERS_SHEET_NAME + "\"\n";
   } else {
-    // Ensure Password column exists
+    // Ensure Password & Mobile columns exist
     const usersHeaders = usersSheet.getRange(1, 1, 1, Math.max(usersSheet.getLastColumn(), 1)).getValues()[0];
     if (usersHeaders.indexOf('Password') === -1) {
       usersSheet.getRange(1, USER_COL.PASSWORD).setValue('Password')
@@ -120,6 +121,13 @@ function manualSetup() {
         .setFontColor('#FFFFFF')
         .setFontWeight('bold');
       result += "✅ Added missing \"Password\" column to \"" + CONFIG.USERS_SHEET_NAME + "\"\n";
+    }
+    if (usersHeaders.indexOf('Mobile') === -1) {
+      usersSheet.getRange(1, USER_COL.MOBILE).setValue('Mobile')
+        .setBackground('#162B50')
+        .setFontColor('#FFFFFF')
+        .setFontWeight('bold');
+      result += "✅ Added missing \"Mobile\" column to \"" + CONFIG.USERS_SHEET_NAME + "\"\n";
     }
     result += "ℹ️  Sheet already exists: \"" + CONFIG.USERS_SHEET_NAME + "\"\n";
   }
@@ -211,6 +219,8 @@ function doPost(e) {
       result = updateUserName(data);
     } else if (action === 'updateUserDetails') {
       result = updateUserDetails(data);
+    } else if (action === 'updateUserProfile') {
+      result = updateUserProfile(data);
     } else if (action === 'verifyLogin') {
       result = verifyLogin(data);
     } else {
@@ -254,10 +264,16 @@ function getUsersSheet() {
     sheet.setFrozenRows(1);
     sheet.autoResizeColumns(1, USER_HEADERS.length);
   } else {
-    // Ensure Password header is present even if auto-created previously
+    // Ensure Password & Mobile headers are present even if auto-created previously
     const headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
     if (headers.indexOf('Password') === -1) {
       sheet.getRange(1, USER_COL.PASSWORD).setValue('Password')
+        .setBackground('#162B50')
+        .setFontColor('#FFFFFF')
+        .setFontWeight('bold');
+    }
+    if (headers.indexOf('Mobile') === -1) {
+      sheet.getRange(1, USER_COL.MOBILE).setValue('Mobile')
         .setBackground('#162B50')
         .setFontColor('#FFFFFF')
         .setFontWeight('bold');
@@ -820,6 +836,7 @@ function lookupUser(email) {
           name:       String(data[i][USER_COL.NAME - 1]),
           role:       role,
           department: String(data[i][USER_COL.DEPARTMENT - 1] || ''),
+          mobile:     String(data[i][USER_COL.MOBILE - 1] || ''),
           requiresPassword: (role === 'admin' || role === 'technician') // Enforce password for privileged roles
         }
       };
@@ -874,7 +891,8 @@ function verifyLogin(data) {
             email:      String(rows[i][USER_COL.EMAIL - 1]),
             name:       String(rows[i][USER_COL.NAME - 1]),
             role:       role,
-            department: String(rows[i][USER_COL.DEPARTMENT - 1] || '')
+            department: String(rows[i][USER_COL.DEPARTMENT - 1] || ''),
+            mobile:     String(rows[i][USER_COL.MOBILE - 1] || '')
           }
         };
       } else {
@@ -996,6 +1014,46 @@ function updateUserDetails(data) {
         sheet.getRange(i + 1, USER_COL.PASSWORD).setValue(data.password.trim());
       }
       return { success: true, message: 'User updated' };
+    }
+  }
+
+  return { success: false, message: 'User not found' };
+}
+
+/**
+ * Update user profile from the "My Profile" section.
+ * Only allows updating Name, Mobile, and Password for the logged-in user.
+ */
+function updateUserProfile(data) {
+  if (!data.email) return { success: false, message: 'Email required' };
+
+  const sheet = getUsersSheet();
+  const rows = sheet.getDataRange().getValues();
+  const emailLower = data.email.toLowerCase().trim();
+
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][USER_COL.EMAIL - 1]).toLowerCase().trim() === emailLower) {
+      if (data.name !== undefined) sheet.getRange(i + 1, USER_COL.NAME).setValue(data.name.trim());
+      if (data.mobile !== undefined) sheet.getRange(i + 1, USER_COL.MOBILE).setValue(data.mobile.trim());
+      
+      // Update password ONLY if a non-empty string is provided
+      if (data.password !== undefined && data.password.trim() !== '') {
+        sheet.getRange(i + 1, USER_COL.PASSWORD).setValue(data.password.trim());
+      }
+      
+      const updatedUser = {
+        email: String(rows[i][USER_COL.EMAIL - 1]),
+        name: data.name !== undefined ? data.name.trim() : String(rows[i][USER_COL.NAME - 1]),
+        role: String(rows[i][USER_COL.ROLE - 1] || 'normal'),
+        department: String(rows[i][USER_COL.DEPARTMENT - 1] || ''),
+        mobile: data.mobile !== undefined ? data.mobile.trim() : String(rows[i][USER_COL.MOBILE - 1] || '')
+      };
+      
+      return { 
+        success: true, 
+        message: 'Profile updated successfully',
+        user: updatedUser
+      };
     }
   }
 

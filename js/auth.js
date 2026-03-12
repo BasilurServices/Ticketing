@@ -140,7 +140,7 @@ function renderNav(activePage) {
     if (user) {
         const initials = (user.name || user.email).charAt(0).toUpperCase();
         html += `
-            <div class="nav-user-pill" title="${user.email}">
+            <div class="nav-user-pill" title="${user.email}" onclick="openProfileModal()" style="cursor:pointer;">
                 <div class="nav-avatar">${initials}</div>
                 <span class="nav-user-name">${user.name || user.email}</span>
             </div>
@@ -161,7 +161,8 @@ function renderNav(activePage) {
     ).join('');
 
     if (user) {
-        mobileHtml += `<button class="nav-link" style="background:none;border:none;text-align:left;cursor:pointer;font-family:inherit;color:var(--muted);" onclick="logoutUser()">↩ Sign Out (${user.name || user.email})</button>`;
+        mobileHtml += `<button class="nav-link" style="background:none;border:none;text-align:left;cursor:pointer;font-family:inherit;width:100%;" onclick="openProfileModal()">👤 My Profile (${user.name || user.email})</button>`;
+        mobileHtml += `<button class="nav-link" style="background:none;border:none;text-align:left;cursor:pointer;font-family:inherit;color:var(--muted);width:100%;" onclick="logoutUser()">↩ Sign Out</button>`;
     }
 
     if (isAdminUser) {
@@ -182,6 +183,9 @@ function renderNav(activePage) {
             mobileMenu.classList.toggle('open');
         });
     }
+
+    // Inject Profile Modal if it doesn't exist
+    injectProfileModal();
 }
 
 /** Sign user out and go to login page. */
@@ -213,5 +217,145 @@ function formatDisplayDate(date) {
         return `${p.year}-${p.month}-${p.day}  ${p.hour}:${p.minute}`;
     } catch (e) {
         return String(date);
+    }
+}
+
+// ── PROFILE MODAL ──────────────────────────────────────────
+
+/**
+ * Injects the Profile Modal HTML into the body.
+ */
+function injectProfileModal() {
+    if (document.getElementById('profileModal')) return;
+
+    const modalHtml = `
+    <div class="modal-overlay" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle" style="display:none; z-index: 10001;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="profileModalTitle">My Profile</h3>
+                <button class="modal-close" onclick="closeProfileModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label>Email Address</label>
+                    <input type="text" id="pEmail" readonly style="background:var(--off-white); cursor:default; color:var(--text-light);" />
+                </div>
+                <div class="modal-field">
+                    <label>Department</label>
+                    <input type="text" id="pDept" readonly style="background:var(--off-white); cursor:default; color:var(--text-light);" />
+                </div>
+                <div class="modal-field">
+                    <label for="pName">Full Name</label>
+                    <input type="text" id="pName" placeholder="Enter your full name" />
+                </div>
+                <div class="modal-field">
+                    <label for="pMobile">Mobile Number</label>
+                    <input type="text" id="pMobile" placeholder="e.g. 07XXXXXXXX" />
+                </div>
+                <div class="modal-field">
+                    <label for="pPassword">Change Password</label>
+                    <input type="password" id="pPassword" placeholder="Enter new password to change" />
+                    <p class="auth-hint" style="font-size:10px; margin-top:4px;">Leave blank if you don't want to change it.</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeProfileModal()">Cancel</button>
+                    <button class="btn-submit btn-save" onclick="saveProfile()" id="saveProfileBtn">💾 Save Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function openProfileModal() {
+    const user = sessionGet();
+    if (!user) return;
+
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+
+    document.getElementById('pEmail').value = user.email || '';
+    document.getElementById('pName').value = user.name || '';
+    document.getElementById('pDept').value = user.department || '';
+    document.getElementById('pMobile').value = user.mobile || '';
+    document.getElementById('pPassword').value = '';
+
+    modal.style.display = 'flex';
+    
+    // Close mobile menu if open
+    const hamburger = document.querySelector('.nav-hamburger');
+    const mobileMenu = document.querySelector('.nav-mobile-menu');
+    if (hamburger) hamburger.classList.remove('open');
+    if (mobileMenu) mobileMenu.classList.remove('open');
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function saveProfile() {
+    const user = sessionGet();
+    if (!user) return;
+
+    const btn = document.getElementById('saveProfileBtn');
+    const originalText = btn.innerHTML;
+    
+    const name = document.getElementById('pName').value.trim();
+    const mobile = document.getElementById('pMobile').value.trim();
+    const password = document.getElementById('pPassword').value.trim();
+
+    if (!name) {
+        alert('Name is required.');
+        return;
+    }
+
+    btn.innerHTML = 'Saving...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(CONFIG.API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'updateUserProfile',
+                email: user.email,
+                name: name,
+                mobile: mobile,
+                password: password
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Update session
+            sessionSave(result.user);
+            
+            // Update UI elements if they exist
+            const userNameText = document.getElementById('userNameText');
+            if (userNameText) userNameText.innerText = result.user.name;
+            
+            // Re-render nav to update avatar/name
+            if (typeof renderNav === 'function') {
+                // Determine active page from URL
+                const path = window.location.pathname;
+                let active = 'submit';
+                if (path.includes('track.html')) active = 'track';
+                if (path.includes('admin.html')) active = 'admin';
+                renderNav(active);
+            }
+
+            alert('Profile updated successfully!');
+            closeProfileModal();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (err) {
+        console.error('Profile update error:', err);
+        alert('Failed to update profile. Please try again.');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 }
