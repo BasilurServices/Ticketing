@@ -32,6 +32,21 @@ window.addEventListener('DOMContentLoaded', () => {
     if (nameInput) nameInput.value = user.name || '';
     if (emailInput) emailInput.value = user.email || '';
 
+    // ── Populate departments dynamically ──────────────────
+    if (deptSelect && typeof CONFIG !== 'undefined' && CONFIG.DEPARTMENTS) {
+        // Keep the first "Select your department" option
+        const firstOption = deptSelect.options[0];
+        deptSelect.innerHTML = '';
+        if (firstOption) deptSelect.appendChild(firstOption);
+
+        CONFIG.DEPARTMENTS.forEach(dept => {
+            const opt = document.createElement('option');
+            opt.value = dept;
+            opt.textContent = dept;
+            deptSelect.appendChild(opt);
+        });
+    }
+
     // Pre-select department if stored
     if (deptSelect && user.department) {
         const opts = Array.from(deptSelect.options);

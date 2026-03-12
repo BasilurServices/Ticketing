@@ -57,6 +57,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const lastTab = localStorage.getItem('adminActiveTab') || 'tickets';
     switchTab(lastTab);
 
+    // ── Populate departments dynamically ──────────────────
+    populateAdminDepartmentDropdowns();
+
     // Close modal when clicking outside
     const ticketModal = document.getElementById('ticketModal');
     if (ticketModal) {
@@ -1362,5 +1365,31 @@ function exportToPDF() {
 
     html2pdf().set(opt).from(element).save().then(() => {
         element.style.cssText = originalStyles;
+    });
+}
+
+/**
+ * Populates all department dropdowns in the Admin Panel from CONFIG.DEPARTMENTS.
+ */
+function populateAdminDepartmentDropdowns() {
+    if (typeof CONFIG === 'undefined' || !CONFIG.DEPARTMENTS) return;
+
+    const selectors = ['filterDepartment', 'userFilterDepartment', 'uDept'];
+
+    selectors.forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        // Keep the first option
+        const firstOption = select.options[0];
+        select.innerHTML = '';
+        if (firstOption) select.appendChild(firstOption);
+
+        CONFIG.DEPARTMENTS.forEach(dept => {
+            const opt = document.createElement('option');
+            opt.value = dept;
+            opt.textContent = dept;
+            select.appendChild(opt);
+        });
     });
 }
