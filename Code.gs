@@ -30,14 +30,15 @@ const COL = {
   ASSIGNED_TECHNICIAN: 11,
   COMMENTS: 12,
   RESOLUTION: 13,
-  LAST_UPDATED: 14
+  LAST_UPDATED: 14,
+  ASSIGNED_BY: 15
 };
 
 const HEADERS = [
   'Ticket ID', 'Date Created', 'Employee Name', 'Email Address',
   'Department', 'Issue Category', 'Priority Level', 'Description',
   'Screenshot Link', 'Ticket Status', 'Assigned Technician',
-  'Comments', 'Resolution', 'Last Updated'
+  'Comments', 'Resolution', 'Last Updated', 'Assigned By'
 ];
 
 // Users sheet column map (1-based)
@@ -443,6 +444,9 @@ function updateTicket(data) {
       if (data.resolution !== undefined) {
         sheet.getRange(row, COL.RESOLUTION).setValue(data.resolution);
       }
+      if (data.assignedBy !== undefined) {
+        sheet.getRange(row, COL.ASSIGNED_BY).setValue(data.assignedBy);
+      }
       sheet.getRange(row, COL.LAST_UPDATED).setValue(now);
 
       // Emails
@@ -460,11 +464,11 @@ function updateTicket(data) {
         // 2. Send assignment email if technician changed and is NOT empty
         const newTech = data.assignedTechnician;
         if (newTech !== undefined && newTech !== oldTech && String(newTech).trim() !== '') {
-            const techEmails = getEmailsByNames(String(newTech));
-            if (techEmails) {
-              const ticketData = rowToTicket(allData[i]); // Original data for description etc.
-              sendTechnicianAssignmentEmail(techEmails, data.ticketId, ticketData, data.assignedBy || 'Admin');
-            }
+          const techEmails = getEmailsByNames(String(newTech));
+          if (techEmails) {
+            const ticketData = rowToTicket(allData[i]); // Original data for description etc.
+            sendTechnicianAssignmentEmail(techEmails, data.ticketId, ticketData, data.assignedBy);
+          }
         }
       } catch (e) {
         console.error("Error sending update emails:", e);
@@ -539,18 +543,21 @@ ${CONFIG.COMPANY_NAME}
  */
 function sendTechnicianAssignmentEmail(toEmails, ticketId, ticketData, assignedBy) {
   if (!toEmails) return;
-  const assignedByStr = assignedBy || 'Admin';
   const subject = `[ASSIGNED] You have been assigned to Ticket: ${ticketId}`;
+  
+  const assignedByText = assignedBy ? `Assigned by: ${assignedBy}` : '';
   
   const plainBody = `
 Hello,
 
-You have been assigned to the following IT support ticket by ${assignedByStr}:
+You have been assigned to the following IT support ticket:
 
 Ticket ID:   ${ticketId}
 Priority:    ${ticketData.priority}
 Category:    ${ticketData.category}
 Submitted by: ${ticketData.name}
+
+${assignedByText}
 
 Description:
 ${ticketData.description}
@@ -562,7 +569,7 @@ Please log in to the IT Admin Dashboard to begin working on this ticket.
 <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-top: 4px solid #2563eb; border-radius: 4px; overflow: hidden;">
   <div style="background-color: #f8f9fa; padding: 20px; text-align: center;">
     <h2 style="margin: 0; color: #2563eb;">Ticket Assigned to You</h2>
-    <p style="margin: 5px 0 0 0; color: #666;">You have been assigned to handle a new support request by <strong>${assignedByStr}</strong>.</p>
+    <p style="margin: 5px 0 0 0; color: #666;">You have been assigned to handle a new support request.</p>
   </div>
   <div style="padding: 20px;">
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
@@ -582,6 +589,11 @@ Please log in to the IT Admin Dashboard to begin working on this ticket.
         <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Submitted By:</strong></td>
         <td style="padding: 5px 0; border-bottom: 1px solid #eee;">${ticketData.name}</td>
       </tr>
+      ${assignedBy ? `
+      <tr>
+        <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Assigned By:</strong></td>
+        <td style="padding: 5px 0; border-bottom: 1px solid #eee;">${assignedBy}</td>
+      </tr>` : ''}
     </table>
     
     <div style="background-color: #f4f6f9; padding: 15px; border-left: 4px solid #162B50; border-radius: 4px;">
@@ -807,7 +819,8 @@ function rowToTicket(row) {
     assignedTechnician: row[COL.ASSIGNED_TECHNICIAN - 1],
     comments: row[COL.COMMENTS - 1],
     resolution: row[COL.RESOLUTION - 1],
-    lastUpdated: lu
+    lastUpdated: lu,
+    assignedBy: row[COL.ASSIGNED_BY - 1] || ''
   };
 }
 

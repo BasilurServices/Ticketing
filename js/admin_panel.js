@@ -451,6 +451,7 @@ function openModal(ticketId) {
     document.getElementById('mEmail').textContent = t.email;
     document.getElementById('mDept').textContent = t.department;
     document.getElementById('mCat').textContent = t.category;
+    document.getElementById('mAssignedBy').textContent = t.assignedBy || '—';
 
     // Description
     document.getElementById('mDesc').textContent = t.description || '—';
@@ -506,7 +507,9 @@ async function saveTicket() {
         saveBtn.textContent = '⏳ Saving...';
     }
 
-    const checkedTechs = Array.from(document.querySelectorAll('#mTechCheckboxes input[type="checkbox"]:checked')).map(cb => cb.value);
+    const currentUser = sessionGet();
+    const assignedByName = currentUser ? currentUser.name : 'Unknown Admin';
+
     const updates = {
         action: 'updateTicket',
         ticketId: currentTicketId,
@@ -514,7 +517,8 @@ async function saveTicket() {
         status: document.getElementById('mStatus').value,
         priority: document.getElementById('mPriority').value,
         comments: document.getElementById('mComments').value.trim(),
-        resolution: document.getElementById('mResolution').value.trim()
+        resolution: document.getElementById('mResolution').value.trim(),
+        assignedBy: assignedByName
     };
 
     try {
@@ -528,6 +532,7 @@ async function saveTicket() {
             formData.append('priority', updates.priority);
             formData.append('comments', updates.comments);
             formData.append('resolution', updates.resolution);
+            formData.append('assignedBy', updates.assignedBy);
 
             const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
                 method: 'POST',
@@ -548,7 +553,8 @@ async function saveTicket() {
                 status: updates.status,
                 priority: updates.priority,
                 comments: updates.comments,
-                resolution: updates.resolution
+                resolution: updates.resolution,
+                assignedBy: updates.assignedBy
             };
         }
 
