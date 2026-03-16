@@ -98,7 +98,16 @@ function manualSetup() {
     sheet.autoResizeColumns(1, HEADERS.length);
     result += "✅ Created Sheet: \"" + CONFIG.SHEET_NAME + "\"\n";
   } else {
-    result += "ℹ️  Sheet already exists: \"" + CONFIG.SHEET_NAME + "\" (Skipped)\n";
+    // Ensure "Assigned By" column exists
+    const ticketHeaders = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+    if (ticketHeaders.indexOf('Assigned By') === -1) {
+      sheet.getRange(1, COL.ASSIGNED_BY).setValue('Assigned By')
+        .setBackground('#0B1D3A')
+        .setFontColor('#FFFFFF')
+        .setFontWeight('bold');
+      result += "✅ Added missing \"Assigned By\" column to \"" + CONFIG.SHEET_NAME + "\"\n";
+    }
+    result += "ℹ️  Sheet already exists: \"" + CONFIG.SHEET_NAME + "\"\n";
   }
 
   // 2. Setup Users Sheet
@@ -370,7 +379,8 @@ function createTicket(data, params) {
     data.assignedTechnician || '',  // Assigned Technician
     '',  // Comments
     '',  // Resolution
-    now  // Last Updated
+    now, // Last Updated
+    ''   // Assigned By
   ]);
 
   // Send notification emails
