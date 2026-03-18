@@ -949,10 +949,13 @@ async function createNewUser() {
 
     try {
         if (typeof CONFIG !== 'undefined' && CONFIG.APPS_SCRIPT_URL) {
+            const formData = new FormData();
+            for (const key in payload) {
+                formData.append(key, payload[key]);
+            }
             const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: formData
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.message || 'Creation failed');
@@ -1002,10 +1005,13 @@ async function saveUser() {
 
     try {
         if (typeof CONFIG !== 'undefined' && CONFIG.APPS_SCRIPT_URL) {
+            const formData = new FormData();
+            for (const key in updates) {
+                formData.append(key, updates[key]);
+            }
             const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updates)
+                body: formData
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.message || 'Update failed');
@@ -1090,10 +1096,13 @@ async function submitAdminTask() {
 
     try {
         if (typeof CONFIG !== 'undefined' && CONFIG.APPS_SCRIPT_URL) {
+            const formData = new FormData();
+            for (const key in payload) {
+                formData.append(key, payload[key]);
+            }
             const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: formData
             });
             const result = await res.json();
             if (!result.success) throw new Error(result.message || 'Failed to create task');

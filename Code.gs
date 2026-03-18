@@ -469,6 +469,17 @@ function updateTicket(data) {
         // 1. Send status update email if status changed
         if (data.status && data.status !== oldStatus) {
           sendStatusUpdateEmail(email, name, data.ticketId, data.status, data.comments);
+          
+          // 1b. If resolved, also notify the assignedBy person
+          if (data.status === 'Resolved') {
+            const assignedBy = data.assignedBy !== undefined ? data.assignedBy : allData[i][COL.ASSIGNED_BY - 1];
+            if (assignedBy && String(assignedBy).trim() !== '') {
+              const assignedByEmails = getEmailsByNames(String(assignedBy));
+              if (assignedByEmails) {
+                sendStatusUpdateEmail(assignedByEmails, assignedBy, data.ticketId, data.status, data.comments);
+              }
+            }
+          }
         }
 
         // 2. Send assignment email if technician changed and is NOT empty

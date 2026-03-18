@@ -4,7 +4,7 @@
  */
 const CONFIG = {
     // 1. Paste your Google Apps Script URL here:
-    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyR0dypdEptE7eFSm5PBEmocVSnJuUvequ4b7GEUhS1kT_M8HWIY_4Sxgd7EXLFb0o_/exec',
+    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxHWDPBnM5uVoVZZ2NHCrp53ucLE6IZ0l_HN64UccGIJGkm4GYHKqKSQ9ZwzG1xLPcg/exec',
 
     // 2. Admin password (for demonstration purposes)
     ADMIN_PASSWORD: 'admin123',
