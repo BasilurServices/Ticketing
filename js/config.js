@@ -16,7 +16,7 @@ const CONFIG = {
     DEPARTMENTS: [
         'Operation', 'Management', 'BTE', 'Engineering', 'Finance', 'FTD', 'Graphic',
         'Human Resources', 'Import & Export', 'Marketing', 'Production', 'Purchasing',
-        'Quality Assurance', 'Sales', 'Stores', 'Tea', 'Technology'
+        'Quality Assurance', 'Sales', 'Stores', 'Tea', 'Technology', 'Sticker'
     ]
 };
 
