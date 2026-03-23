@@ -510,6 +510,8 @@ async function saveTicket() {
     const currentUser = sessionGet();
     const assignedByName = currentUser ? currentUser.name : 'Unknown Admin';
 
+    const checkedTechs = Array.from(document.querySelectorAll('#mTechCheckboxes input[type="checkbox"]:checked')).map(cb => cb.value);
+
     const updates = {
         action: 'updateTicket',
         ticketId: currentTicketId,
