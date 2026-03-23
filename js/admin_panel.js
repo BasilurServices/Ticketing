@@ -1190,7 +1190,9 @@ function renderWorkloadStats() {
     const highUrgent = allTickets.filter(t => (t.priority === 'High' || t.priority === 'Urgent') && (t.status !== 'Resolved' && t.status !== 'Closed')).length;
     const maintenance = allTickets.filter(t => t.category === 'Maintenance').length;
 
-    container.innerHTML = `
+    const container = document.getElementById('workloadStats');
+    if (container) {
+        container.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
             <span style="color:var(--text-light)">Unassigned Tickets</span>
             <strong style="${unassigned > 0 ? 'color:var(--danger)' : ''}">${unassigned}</strong>
@@ -1208,6 +1210,7 @@ function renderWorkloadStats() {
             <strong>${sla}%</strong>
         </div>
     `;
+    }
 }
 
 function updateStatusChart(tickets) {
