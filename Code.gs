@@ -161,7 +161,20 @@ function manualSetup() {
     result += "ℹ️  Sheet already exists: \"" + CONFIG.MAIL_LOGS_SHEET_NAME + "\" (Skipped)\n";
   }
 
-  // 4. Setup Drive Folder
+  // 4. Setup Feedback Sheet
+  let fbSheet = ss.getSheetByName(CONFIG.FEEDBACK_SHEET_NAME);
+  if (!fbSheet) {
+    fbSheet = ss.insertSheet(CONFIG.FEEDBACK_SHEET_NAME);
+    fbSheet.appendRow(['Ticket ID', 'Review Date', 'Employee Email', 'Rating', 'Comment']);
+    fbSheet.getRange(1, 1, 1, 5).setBackground('#0B1D3A').setFontColor('#FFFFFF').setFontWeight('bold');
+    fbSheet.setFrozenRows(1);
+    fbSheet.autoResizeColumns(1, 5);
+    result += "✅ Created Sheet: \"" + CONFIG.FEEDBACK_SHEET_NAME + "\"\n";
+  } else {
+    result += "ℹ️  Sheet already exists: \"" + CONFIG.FEEDBACK_SHEET_NAME + "\" (Skipped)\n";
+  }
+
+  // 5. Setup Drive Folder
   const folders = DriveApp.getFoldersByName(CONFIG.DRIVE_FOLDER_NAME);
   if (folders.hasNext()) {
     const folder = folders.next();
