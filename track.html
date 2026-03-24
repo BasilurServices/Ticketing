@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -159,6 +159,24 @@
         <div class="resolution-block" id="resolutionBlock" style="display:none;">
           <h4>✅ Resolution</h4>
           <p id="resResolution">—</p>
+        </div>
+
+        <div class="feedback-block" id="feedbackBlock" style="display:none; background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 24px; border: 1px solid #e2e8f0;">
+          <h4 style="margin: 0 0 10px 0; color: #0f172a;">Rate your Support Experience</h4>
+          <p style="margin: 0 0 15px 0; font-size: 14px; color: #64748b;">Please let us know how we did. Your feedback helps us improve.</p>
+          
+          <div class="star-rating" id="starRating" style="font-size: 32px; color: #cbd5e1; cursor: pointer; margin-bottom: 15px; user-select: none;">
+            <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+          </div>
+          
+          <textarea id="feedbackComment" placeholder="Any additional comments? (Optional)" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 15px; resize: vertical; min-height: 80px; font-family: 'IBM Plex Sans', sans-serif;"></textarea>
+          
+          <button id="submitFeedbackBtn" onclick="submitTicketFeedback()" class="btn-submit" style="width: auto; padding: 10px 24px; background-color: #2563eb; color: var(--white); font-weight: 600;">Submit Feedback</button>
+        </div>
+        
+        <div class="feedback-success-block" id="feedbackSuccessBlock" style="display:none; background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin-top: 24px; border: 1px solid #10b981; text-align: center;">
+          <h4 style="margin: 0 0 5px 0; color: #047857;">Thank You!</h4>
+          <p style="margin: 0; font-size: 14px; color: #065f46;">Your feedback has been submitted successfully.</p>
         </div>
 
         <div class="timeline-block">

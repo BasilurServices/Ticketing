@@ -7,6 +7,7 @@
 
 let allTickets = [];
 let allUsers = [];
+let allFeedback = [];
 let currentTicketId = null;
 let currentUserEmail = null;
 let taskPieChartInstance = null;
@@ -94,6 +95,7 @@ function authenticate() {
         if (authError) authError.style.display = 'none';
         loadTickets();
         loadUsers();
+        loadFeedback();
     } else {
         if (authError) authError.style.display = 'block';
         if (authInput) {
@@ -201,6 +203,28 @@ async function loadTickets(isForce = false) {
     }
 }
 
+async function loadFeedback(isForce = false) {
+    if (!isForce) {
+        const cached = CACHE_MANAGER.get('feedback_cache_data');
+        if (cached) {
+            allFeedback = cached;
+            return;
+        }
+    }
+    try {
+        if (typeof CONFIG === 'undefined' || !CONFIG.APPS_SCRIPT_URL) return;
+        const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=getAllFeedback`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (data.success) {
+            allFeedback = data.feedback || [];
+            CACHE_MANAGER.set('feedback_cache_data', allFeedback, 15);
+        }
+    } catch (err) {
+        console.error('Error loading feedback:', err);
+    }
+}
+
 // ── STATS ─────────────────────────────────────────────────────
 
 function updateStats() {
@@ -219,18 +243,19 @@ function updateStats() {
     if (ctx) {
         const closed = allTickets.filter(t => t.status === 'Closed').length;
         const resOnly = allTickets.filter(t => t.status === 'Resolved').length;
+        const reviewed = allTickets.filter(t => t.status === 'Reviewed').length;
 
         if (taskPieChartInstance) {
-            taskPieChartInstance.data.datasets[0].data = [open, inProgress, resOnly, closed];
+            taskPieChartInstance.data.datasets[0].data = [open, inProgress, resOnly, reviewed, closed];
             taskPieChartInstance.update();
         } else if (typeof Chart !== 'undefined') {
             taskPieChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Open', 'In Progress', 'Resolved', 'Closed'],
+                    labels: ['Open', 'In Progress', 'Resolved', 'Reviewed', 'Closed'],
                     datasets: [{
-                        data: [open, inProgress, resOnly, closed],
-                        backgroundColor: ['#2563eb', '#f59e0b', '#10b981', '#64748b'],
+                        data: [open, inProgress, resOnly, reviewed, closed],
+                        backgroundColor: ['#2563eb', '#f59e0b', '#10b981', '#8b5cf6', '#64748b'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
@@ -627,8 +652,12 @@ function switchTab(tabId) {
         document.getElementById('tabStats').classList.add('active');
         document.getElementById('statsView').classList.add('active');
         // Ensure tickets are loaded for stats
-        if (allTickets.length === 0) {
-            loadTickets().then(() => renderWorkloadStats());
+        const deps = [];
+        if (allTickets.length === 0) deps.push(loadTickets());
+        if (allFeedback.length === 0) deps.push(loadFeedback());
+        
+        if (deps.length > 0) {
+            Promise.all(deps).then(() => renderWorkloadStats());
         } else {
             renderWorkloadStats();
         }
@@ -1152,7 +1181,7 @@ function renderWorkloadStats() {
     let totalDays = 0;
     let resolvedCount = 0;
     allTickets.forEach(t => {
-        if ((t.status === 'Resolved' || t.status === 'Closed') && t.dateCreated && t.lastUpdated) {
+        if ((t.status === 'Resolved' || t.status === 'Closed' || t.status === 'Reviewed') && t.dateCreated && t.lastUpdated) {
             const start = new Date(t.dateCreated + ' GMT+5:30');
             const end = new Date(t.lastUpdated + ' GMT+5:30');
             if (!isNaN(start) && !isNaN(end)) {
@@ -1166,12 +1195,23 @@ function renderWorkloadStats() {
     });
     const avgDays = resolvedCount === 0 ? 0 : (totalDays / resolvedCount).toFixed(1);
 
+    // Feedback Stats
+    const fbCount = allFeedback.length;
+    let avgRating = 0;
+    if (fbCount > 0) {
+        const sum = allFeedback.reduce((a, b) => a + (b.rating || 0), 0);
+        avgRating = (sum / fbCount).toFixed(1);
+    }
+
     // Update Report Cards
     animateNumber('reportStatTotal', total);
     animateNumber('reportStatResolved', resolved);
     animateNumber('reportStatAvgTime', avgDays);
     const slaEl = document.getElementById('reportStatSLA');
     if (slaEl) slaEl.textContent = `${sla}%`;
+    animateNumber('reportStatFeedbackCount', fbCount);
+    const avgRatingEl = document.getElementById('reportStatAvgRating');
+    if (avgRatingEl) avgRatingEl.textContent = avgRating.toString();
 
     // 2. Initial Status Chart (re-use logic but Ensure Instance)
     updateStatusChart(allTickets);
@@ -1221,8 +1261,9 @@ function updateStatusChart(tickets) {
     const inProgress = tickets.filter(t => t.status === 'In Progress').length;
     const resolved = tickets.filter(t => t.status === 'Resolved').length;
     const closed = tickets.filter(t => t.status === 'Closed').length;
+    const reviewed = tickets.filter(t => t.status === 'Reviewed').length;
 
-    const data = [open, inProgress, resolved, closed];
+    const data = [open, inProgress, resolved, reviewed, closed];
 
     if (taskPieChartInstance) {
         taskPieChartInstance.data.datasets[0].data = data;
@@ -1231,10 +1272,10 @@ function updateStatusChart(tickets) {
         taskPieChartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Open', 'In Progress', 'Resolved', 'Closed'],
+                labels: ['Open', 'In Progress', 'Resolved', 'Reviewed', 'Closed'],
                 datasets: [{
                     data: data,
-                    backgroundColor: ['#2563eb', '#f59e0b', '#10b981', '#64748b'],
+                    backgroundColor: ['#2563eb', '#f59e0b', '#10b981', '#8b5cf6', '#64748b'],
                     borderWidth: 0
                 }]
             },
@@ -1332,26 +1373,38 @@ function updateTechPerformanceTable(tickets) {
         if (!t.assignedTechnician) return;
         const names = t.assignedTechnician.split(',').map(n => n.trim());
         names.forEach(name => {
-            if (!techs[name]) techs[name] = { solved: 0, pending: 0 };
-            if (t.status === 'Resolved' || t.status === 'Closed') techs[name].solved++;
+            if (!techs[name]) techs[name] = { solved: 0, pending: 0, ratingSum: 0, ratingCount: 0 };
+            if (t.status === 'Resolved' || t.status === 'Closed' || t.status === 'Reviewed') techs[name].solved++;
             else techs[name].pending++;
+            
+            // Link feedback points
+            const fb = allFeedback.find(f => f.ticketId === t.ticketId);
+            if (fb && fb.rating) {
+                techs[name].ratingSum += fb.rating;
+                techs[name].ratingCount++;
+            }
         });
     });
 
     const sortedTechs = Object.entries(techs).sort((a, b) => b[1].solved - a[1].solved).slice(0, 5);
 
     if (sortedTechs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" class="empty-row">No technician data</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-row">No technician data</td></tr>';
         return;
     }
 
-    tbody.innerHTML = sortedTechs.map(([name, stats]) => `
+    tbody.innerHTML = sortedTechs.map(([name, stats]) => {
+        const avgRating = stats.ratingCount > 0 ? (stats.ratingSum / stats.ratingCount).toFixed(1) : '—';
+        const ratingColor = stats.ratingCount > 0 ? 'var(--yellow)' : 'var(--muted)';
+        
+        return `
         <tr>
             <td><strong>${escHtml(name)}</strong></td>
             <td><span style="color:var(--green); font-weight:600;">${stats.solved}</span></td>
             <td><span style="color:var(--muted);">${stats.pending}</span></td>
+            <td><span style="color:${ratingColor};font-weight:600;">⭐ ${avgRating}</span></td>
         </tr>
-    `).join('');
+    `}).join('');
 }
 
 /**

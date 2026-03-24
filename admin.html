@@ -123,6 +123,7 @@
             <option>Open</option>
             <option>In Progress</option>
             <option>Resolved</option>
+            <option>Reviewed</option>
             <option>Closed</option>
           </select>
           <select id="filterPriority" onchange="applyFilters()" aria-label="Filter by priority">
@@ -290,6 +291,20 @@
                 <div class="stat-label">Resolution Rate</div>
               </div>
             </div>
+            <div class="stat-card">
+              <div class="stat-icon yellow">⭐</div>
+              <div>
+                <div class="stat-num" id="reportStatAvgRating">0.0</div>
+                <div class="stat-label">Avg Rating</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon blue">💬</div>
+              <div>
+                <div class="stat-num" id="reportStatFeedbackCount">0</div>
+                <div class="stat-label">Feedback Received</div>
+              </div>
+            </div>
           </div>
 
           <div
@@ -345,6 +360,7 @@
                       <th>Support Engineer</th>
                       <th>Solved</th>
                       <th>Pending</th>
+                      <th>Avg Rating</th>
                     </tr>
                   </thead>
                   <tbody id="topTechsTable">
@@ -437,6 +453,7 @@
               <option>Open</option>
               <option>In Progress</option>
               <option>Resolved</option>
+              <option>Reviewed</option>
               <option>Closed</option>
             </select>
           </div>

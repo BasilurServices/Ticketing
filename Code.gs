@@ -12,7 +12,8 @@ const CONFIG = {
   COMPANY_NAME: 'Basilur Tea Export',
   SHEET_NAME: 'Tickets',
   USERS_SHEET_NAME: 'Users',  // Sheet that stores user emails, names, roles
-  MAIL_LOGS_SHEET_NAME: 'Mail Logs'
+  MAIL_LOGS_SHEET_NAME: 'Mail Logs',
+  FEEDBACK_SHEET_NAME: 'Feedback'
 };
 
 // Column index map (1-based)
@@ -31,14 +32,15 @@ const COL = {
   COMMENTS: 12,
   RESOLUTION: 13,
   LAST_UPDATED: 14,
-  ASSIGNED_BY: 15
+  ASSIGNED_BY: 15,
+  FEEDBACK_SUBMITTED: 16
 };
 
 const HEADERS = [
   'Ticket ID', 'Date Created', 'Employee Name', 'Email Address',
   'Department', 'Issue Category', 'Priority Level', 'Description',
   'Screenshot Link', 'Ticket Status', 'Assigned Technician',
-  'Comments', 'Resolution', 'Last Updated', 'Assigned By'
+  'Comments', 'Resolution', 'Last Updated', 'Assigned By', 'Feedback Submitted'
 ];
 
 // Users sheet column map (1-based)
@@ -189,6 +191,8 @@ function doGet(e) {
       result = getTicket(e.parameter.ticketId);
     } else if (action === 'getAllTickets') {
       result = getAllTickets();
+    } else if (action === 'getAllFeedback') {
+      result = getAllFeedback();
     } else if (action === 'lookupUser') {
       result = lookupUser(e.parameter.email);
     } else if (action === 'getTicketsByEmail') {
@@ -223,6 +227,8 @@ function doPost(e) {
       result = createTicket(data, e.parameter);
     } else if (action === 'updateTicket') {
       result = updateTicket(data);
+    } else if (action === 'submitFeedback') {
+      result = submitFeedback(data);
     } else if (action === 'registerUser') {
       result = registerUser(data);
     } else if (action === 'updateUserName') {
@@ -803,6 +809,12 @@ ${CONFIG.COMPANY_NAME}
       <p style="margin: 0 0 5px 0; font-weight: bold;">Update from IT Team:</p>
       <p style="margin: 0; white-space: pre-wrap;">${comments}</p>
     </div>` : ''}
+    ${newStatus === 'Resolved' ? `
+    <div style="background-color: #f8f9fa; padding: 15px; margin-top: 15px; border-radius: 4px; text-align: center; border: 1px solid #27ae60;">
+      <h4 style="margin: 0 0 10px 0; color: #27ae60;">How did we do?</h4>
+      <p style="margin: 0 0 15px 0; font-size: 14px; color: #555;">Your feedback helps us improve our IT support services.</p>
+      <a href="https://basilurservices.github.io/Ticketing/track.html?ticketId=${ticketId}" style="display: inline-block; padding: 10px 20px; background-color: #27ae60; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">Leave a Rating</a>
+    </div>` : ''}
     <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
       <p style="font-size: 14px; color: #555;">You can track your ticket progress at any time securely through the IT Ticketing Portal.</p>
     </div>
@@ -845,7 +857,8 @@ function rowToTicket(row) {
     comments: row[COL.COMMENTS - 1],
     resolution: row[COL.RESOLUTION - 1],
     lastUpdated: lu,
-    assignedBy: row[COL.ASSIGNED_BY - 1] || ''
+    assignedBy: row[COL.ASSIGNED_BY - 1] || '',
+    feedbackSubmitted: row[COL.FEEDBACK_SUBMITTED - 1] || 'No'
   };
 }
 
@@ -1189,4 +1202,72 @@ function setupAutoCloseTrigger() {
   } else {
     return "ℹ️ Info: Auto-close trigger already exists.";
   }
+}
+
+// ─── FEEDBACK SYSTEM ─────────────────────────────────────────
+
+function getFeedbackSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  return ss.getSheetByName(CONFIG.FEEDBACK_SHEET_NAME);
+}
+
+function submitFeedback(data) {
+  if (!data.ticketId || !data.rating) return { success: false, message: 'Ticket ID and rating are required' };
+
+  // 1. Save to Feedback Sheet
+  let fbSheet = getFeedbackSheet();
+  if (!fbSheet) {
+    fbSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(CONFIG.FEEDBACK_SHEET_NAME);
+    fbSheet.appendRow(['Ticket ID', 'Review Date', 'Employee Email', 'Rating', 'Comment']);
+    fbSheet.getRange(1, 1, 1, 5).setBackground('#0B1D3A').setFontColor('#FFFFFF').setFontWeight('bold');
+  }
+
+  // Prevent duplicate insertion in Feedback Sheet
+  const fbData = fbSheet.getDataRange().getValues();
+  for (let i = 1; i < fbData.length; i++) {
+    if (fbData[i][0] === data.ticketId) {
+      return { success: false, message: 'Feedback already submitted for this ticket' };
+    }
+  }
+
+  fbSheet.appendRow([
+    data.ticketId,
+    formatDate(new Date()),
+    data.email || 'Unknown',
+    data.rating,
+    data.comment || ''
+  ]);
+
+  // 2. Mark Tickets sheet
+  const sheet = getSheet();
+  const allData = sheet.getDataRange().getValues();
+  for (let i = 1; i < allData.length; i++) {
+    if (allData[i][COL.TICKET_ID - 1] === data.ticketId) {
+      const row = i + 1;
+      sheet.getRange(row, COL.FEEDBACK_SUBMITTED).setValue('Yes');
+      sheet.getRange(row, COL.STATUS).setValue('Reviewed');
+      sheet.getRange(row, COL.LAST_UPDATED).setValue(formatDate(new Date()));
+      return { success: true, message: 'Feedback submitted successfully' };
+    }
+  }
+
+  return { success: false, message: 'Ticket not found' };
+}
+
+function getAllFeedback() {
+  const fbSheet = getFeedbackSheet();
+  if (!fbSheet) return { success: true, feedback: [] };
+
+  const fbData = fbSheet.getDataRange().getValues();
+  const feedback = [];
+  for (let i = 1; i < fbData.length; i++) {
+    feedback.push({
+      ticketId: fbData[i][0],
+      date: fbData[i][1] instanceof Date ? formatDate(fbData[i][1]) : fbData[i][1],
+      email: fbData[i][2],
+      rating: parseInt(fbData[i][3], 10) || 0,
+      comment: fbData[i][4] || ''
+    });
+  }
+  return { success: true, feedback: feedback };
 }

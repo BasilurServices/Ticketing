@@ -244,6 +244,32 @@ function renderTicket(t) {
         if (resBlock) resBlock.style.display = 'none';
     }
 
+    // Feedback
+    const feedbackBlock = document.getElementById('feedbackBlock');
+    const feedbackSuccessBlock = document.getElementById('feedbackSuccessBlock');
+    
+    // Reset form
+    window.selectedRating = 0;
+    updateStars(0);
+    const commentEl = document.getElementById('feedbackComment');
+    if (commentEl) commentEl.value = '';
+    
+    if (t.status === 'Resolved' || t.status === 'Closed' || t.status === 'Reviewed') {
+        if (t.feedbackSubmitted === 'Yes' || t.status === 'Reviewed') {
+            if (feedbackBlock) feedbackBlock.style.display = 'none';
+            if (feedbackSuccessBlock) {
+               feedbackSuccessBlock.style.display = 'block';
+               feedbackSuccessBlock.innerHTML = `<h4 style="margin: 0 0 5px 0; color: #047857;">Feedback Received</h4><p style="margin: 0; font-size: 14px; color: #065f46;">Thank you for your feedback on this ticket.</p>`;
+            }
+        } else {
+            if (feedbackBlock) feedbackBlock.style.display = 'block';
+            if (feedbackSuccessBlock) feedbackSuccessBlock.style.display = 'none';
+        }
+    } else {
+        if (feedbackBlock) feedbackBlock.style.display = 'none';
+        if (feedbackSuccessBlock) feedbackSuccessBlock.style.display = 'none';
+    }
+
     buildTimeline(t);
 }
 
@@ -294,4 +320,99 @@ function escapeHtml(str) {
     const d = document.createElement('div');
     d.textContent = str || '';
     return d.innerHTML;
+}
+
+// ── FEEDBACK LOGIC ────────────────────────────────────────────
+
+window.selectedRating = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const stars = document.querySelectorAll('#starRating span');
+    if (stars.length) {
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                updateStars(parseInt(this.getAttribute('data-value')));
+            });
+            star.addEventListener('mouseout', function() {
+                updateStars(window.selectedRating);
+            });
+            star.addEventListener('click', function() {
+                window.selectedRating = parseInt(this.getAttribute('data-value'));
+                updateStars(window.selectedRating);
+            });
+        });
+    }
+});
+
+function updateStars(value) {
+    const stars = document.querySelectorAll('#starRating span');
+    stars.forEach(star => {
+        if (parseInt(star.getAttribute('data-value')) <= value) {
+            star.style.color = '#f59e0b'; // Gold
+        } else {
+            star.style.color = '#cbd5e1'; // Gray
+        }
+    });
+}
+
+async function submitTicketFeedback() {
+    if (window.selectedRating === 0) {
+        alert('Please select a star rating first.');
+        return;
+    }
+
+    const ticketId = document.getElementById('resTicketId').textContent;
+    const comment = document.getElementById('feedbackComment').value.trim();
+    const btn = document.getElementById('submitFeedbackBtn');
+    
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+        if (typeof CONFIG === 'undefined' || !CONFIG.APPS_SCRIPT_URL) {
+            throw new Error('Config missing');
+        }
+
+        const user = sessionGet();
+        const email = user ? user.email : '';
+
+        const formData = new FormData();
+        formData.append('action', 'submitFeedback');
+        formData.append('ticketId', ticketId);
+        formData.append('rating', window.selectedRating.toString());
+        formData.append('comment', comment);
+        formData.append('email', email);
+
+        const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            // Success ui
+            document.getElementById('feedbackBlock').style.display = 'none';
+            document.getElementById('feedbackSuccessBlock').style.display = 'block';
+            
+            // Update local cache
+            const cacheKey = `my_tickets_cache_${email}`;
+            const cached = CACHE_MANAGER.get(cacheKey);
+            if (cached) {
+                const idx = cached.findIndex(t => t.ticketId === ticketId);
+                if (idx !== -1) {
+                    cached[idx].feedbackSubmitted = 'Yes';
+                    cached[idx].status = 'Reviewed';
+                    CACHE_MANAGER.set(cacheKey, cached, 15);
+                }
+            }
+        } else {
+            throw new Error(data.message || 'Failed to submit feedback');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('An error occurred. Please try again.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Feedback';
+    }
 }
