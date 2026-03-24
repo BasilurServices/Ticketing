@@ -1,0 +1,21 @@
+{
+  "name": "Basilur Tea Export IT Help Desk",
+  "short_name": "BTE IT Ticketing",
+  "description": "Submit and track IT support requests at Basilur Tea Export.",
+  "start_url": "/Ticketing/index.html",
+  "display": "standalone",
+  "background_color": "#F0F4FA",
+  "theme_color": "#0B1D3A",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
