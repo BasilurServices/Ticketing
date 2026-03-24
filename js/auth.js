@@ -139,17 +139,14 @@ function renderNav(activePage) {
     // User info + logout
     if (user) {
         const initials = (user.name || user.email).charAt(0).toUpperCase();
+        let nameStyle = isAdminUser ? 'style="color: var(--danger);"' : '';
         html += `
             <div class="nav-user-pill" title="${user.email}" onclick="openProfileModal()" style="cursor:pointer;">
                 <div class="nav-avatar">${initials}</div>
-                <span class="nav-user-name">${user.name || user.email}</span>
+                <span class="nav-user-name" ${nameStyle}>${user.name || user.email}</span>
             </div>
             <button class="nav-logout-btn" onclick="logoutUser()" title="Sign out">↩ Sign Out</button>
         `;
-    }
-
-    if (isAdminUser) {
-        html += `<span class="admin-badge">IT Admin</span>`;
     }
 
     navLinks.innerHTML = html;
@@ -161,12 +158,9 @@ function renderNav(activePage) {
     ).join('');
 
     if (user) {
-        mobileHtml += `<button class="nav-link" style="background:none;border:none;text-align:left;cursor:pointer;font-family:inherit;width:100%;" onclick="openProfileModal()">👤 My Profile (${user.name || user.email})</button>`;
+        let nameColor = isAdminUser ? "color: var(--danger);" : "";
+        mobileHtml += `<button class="nav-link" style="background:none;border:none;text-align:left;cursor:pointer;font-family:inherit;width:100%; ${nameColor}" onclick="openProfileModal()">👤 My Profile (${user.name || user.email})</button>`;
         mobileHtml += `<button class="nav-link" style="background:none;border:none;text-align:left;cursor:pointer;font-family:inherit;color:var(--muted);width:100%;" onclick="logoutUser()">↩ Sign Out</button>`;
-    }
-
-    if (isAdminUser) {
-        mobileHtml += `<span class="admin-badge">IT Admin</span>`;
     }
 
     // Find or create the mobile menu container
@@ -245,6 +239,10 @@ function injectProfileModal() {
                     <input type="text" id="pDept" readonly style="background:var(--off-white); cursor:default; color:var(--text-light);" />
                 </div>
                 <div class="modal-field">
+                    <label>Role</label>
+                    <input type="text" id="pRole" readonly style="background:var(--off-white); cursor:default; color:var(--text-light);" />
+                </div>
+                <div class="modal-field">
                     <label for="pName">Full Name</label>
                     <input type="text" id="pName" placeholder="Enter your full name" />
                 </div>
@@ -278,6 +276,14 @@ function openProfileModal() {
     document.getElementById('pEmail').value = user.email || '';
     document.getElementById('pName').value = user.name || '';
     document.getElementById('pDept').value = user.department || '';
+
+    let roleStr = 'Employee';
+    if (user.role === 'admin') roleStr = 'Admin';
+    else if (user.role === 'technician') roleStr = 'Support Engineer';
+    
+    const pRole = document.getElementById('pRole');
+    if (pRole) pRole.value = roleStr;
+
     document.getElementById('pMobile').value = user.mobile || '';
     document.getElementById('pPassword').value = '';
 

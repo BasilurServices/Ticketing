@@ -45,8 +45,9 @@ nav {
     justify-content: space-between;
     height: 64px;
     border-bottom: 2px solid var(--blue);
-    position: relative;
-    z-index: 100;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
 }
 
@@ -168,17 +169,7 @@ nav {
     background: rgba(239, 68, 68, 0.1);
 }
 
-.admin-badge {
-    background: rgba(56, 189, 248, 0.15);
-    border: 1px solid rgba(56, 189, 248, 0.4);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
-}
+
 
 /* ── HERO ────────────────────────────────────────────────── */
 .hero {
@@ -463,6 +454,9 @@ label {
     border-top: 1px solid rgba(255, 255, 255, 0.07);
     padding: 8px 1rem 12px;
     flex-direction: column;
+    position: sticky;
+    top: 64px;
+    z-index: 999;
     gap: 4px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
@@ -683,4 +677,19 @@ label {
     color: var(--muted);
     margin-top: 6px;
     line-height: 1.4;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.site-footer {
+    text-align: center;
+    padding: 32px 2rem 24px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 40px;
+    border-top: 1px solid rgba(11, 29, 58, 0.05);
+}
+
+.site-footer span {
+    color: var(--text-light);
+    font-weight: 500;
 }
