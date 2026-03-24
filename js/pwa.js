@@ -24,8 +24,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
   // Stash the event so it can be triggered later.
   deferredPrompt = e;
   
-  // Update UI notify the user they can install the PWA
-  showInstallPromotion();
+  // Only show the custom UI banner on desktop screens (width > 700px)
+  if (window.innerWidth > 700) {
+    showInstallPromotion();
+  }
 });
 
 // Hide promotion when app is installed
