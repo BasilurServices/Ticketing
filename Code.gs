@@ -584,6 +584,7 @@ Description:
 ${ticketData.description}
 
 Please log in to the IT Admin Dashboard to begin working on this ticket.
+View Ticket: https://basilurservices.github.io/Ticketing/admin.html?ticketId=${ticketId}
   `;
 
   const htmlBody = `
@@ -624,6 +625,7 @@ Please log in to the IT Admin Dashboard to begin working on this ticket.
   </div>
   <div style="background-color: #f1f1f1; padding: 15px; text-align: center; font-size: 12px; color: #888;">
     Please log in to the Admin Panel to update the status and resolution.<br><br>
+    <a href="https://basilurservices.github.io/Ticketing/admin.html?ticketId=${ticketId}" style="display: inline-block; padding: 10px 20px; margin-bottom: 15px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">View Ticket in Admin Panel</a><br>
     &copy; ${new Date().getFullYear()} ${CONFIG.COMPANY_NAME}. All rights reserved.
   </div>
 </div>
@@ -702,6 +704,7 @@ Description:
 ${data.description}
 
 Please log in to the Admin Panel to assign and respond to this ticket.
+View Ticket: https://basilurservices.github.io/Ticketing/admin.html?ticketId=${ticketId}
   `;
 
   let priorityColor = '#0B1D3A'; // Normal
@@ -745,6 +748,7 @@ Please log in to the Admin Panel to assign and respond to this ticket.
   </div>
   <div style="background-color: #f1f1f1; padding: 15px; text-align: center; font-size: 12px; color: #888;">
     Please log in to the Admin Panel to assign and respond to this ticket.<br><br>
+    <a href="https://basilurservices.github.io/Ticketing/admin.html?ticketId=${ticketId}" style="display: inline-block; padding: 10px 20px; margin-bottom: 15px; background-color: ${priorityColor}; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">View Ticket in Admin Panel</a><br>
     &copy; ${new Date().getFullYear()} ${CONFIG.COMPANY_NAME}. All rights reserved.
   </div>
 </div>
