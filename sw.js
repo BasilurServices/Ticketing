@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bte-ticketing-v1';
+const CACHE_NAME = 'bte-ticketing-v2';
 const ASSETS_TO_CACHE = [
   './index.html',
   './admin.html',
@@ -11,7 +11,9 @@ const ASSETS_TO_CACHE = [
   './js/cache_manager.js',
   './js/auth.js',
   './js/pwa.js',
-  './logo.png'
+  './logo.png',
+  './logo-192.png',
+  './logo-512.png'
 ];
 
 self.addEventListener('install', event => {
