@@ -27,6 +27,7 @@
     border: 1px solid rgba(37, 99, 235, 0.15);
     border-radius: 50%;
     pointer-events: none;
+    animation: float-slow 20s ease-in-out infinite alternate;
 }
 
 .login-page::after {
@@ -39,6 +40,7 @@
     border: 1px solid rgba(56, 189, 248, 0.12);
     border-radius: 50%;
     pointer-events: none;
+    animation: float-medium 15s ease-in-out infinite alternate-reverse;
 }
 
 /* ── LOGIN CARD ───────────────────────────────────────────── */
@@ -255,6 +257,23 @@
     75% {
         transform: translateX(4px);
     }
+}
+
+@keyframes float-slow {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 40px) scale(1.08); }
+    100% { transform: translate(20px, -20px) scale(0.92); }
+}
+
+@keyframes float-medium {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(40px, -30px) rotate(8deg); }
+    100% { transform: translate(-20px, 40px) rotate(-5deg); }
+}
+
+@keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 /* ── NAME STEP (hidden initially) ────────────────────────── */
