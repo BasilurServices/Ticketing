@@ -1,4 +1,4 @@
-﻿# IT Ticketing Platform — Setup Guide
+# IT Ticketing Platform — Setup Guide
 
 ## Overview
 This guide walks you through deploying the IT Ticketing Platform step by step. The whole setup takes about **20–30 minutes**.
@@ -59,28 +59,12 @@ This guide walks you through deploying the IT Ticketing Platform step by step. T
 
 ---
 
-## Step 3: Configure the Frontend Files
-
-Open each HTML file and replace `YOUR_APPS_SCRIPT_URL_HERE` with your Web App URL from Step 2.
-
-**In `index.html`** (line ~180):
+**In `js/config.js`** (line ~7):
 ```javascript
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_ID/exec';
-```
-
-**In `track.html`** (line ~200):
-```javascript
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_ID/exec';
-```
-
-**In `admin.html`** (line ~300):
-```javascript
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_ID/exec';
-```
-
-You can also update the **Admin Password** in `admin.html`:
-```javascript
-const ADMIN_PASSWORD = 'your-secure-password';  // Change from 'admin123'
+const CONFIG = {
+    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/YOUR_ID/exec',
+    // ...
+};
 ```
 
 ---
@@ -117,10 +101,10 @@ Your portal is now live!
 3. You should see all ticket details
 
 ### Test the admin panel:
-1. Open `admin.html`
-2. Enter the admin password
-3. You should see all tickets in the table
-4. Click **View →** on a ticket to open and update it
+1. Open `admin.html` (or `login.html`)
+2. Log in using an IT Admin account.
+3. You should be granted access to the IT Admin Dashboard immediately.
+4. Click **View →** on a ticket to open and update it.
 
 ---
 
@@ -220,7 +204,8 @@ with:
 
 - The Google Sheet is private by default — only the script can write to it
 - The Drive folder should be kept private (screenshots are shared via link only)
-- Change the `ADMIN_PASSWORD` from `admin123` before going live
+- Every staff member should have their own account with a strong password set in the 'Users' sheet.
+- First-time admin login uses the default password `admin123` if no password is set for that email in the sheet.
 - For production use, consider adding proper authentication (OAuth or company SSO)
 - The Apps Script executes as your Google account — keep your account secure
 

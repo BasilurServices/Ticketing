@@ -45,11 +45,6 @@ window.addEventListener('DOMContentLoaded', () => {
         heroWelcome.style.display = 'block';
     }
 
-    // ── Skip password gate — role already confirmed ───────
-    const authGate = document.getElementById('authGate');
-    const adminPanel = document.getElementById('adminPanel');
-    if (authGate) authGate.style.display = 'none';
-    if (adminPanel) adminPanel.style.display = 'block';
 
     // ── Pre-load users (needed for ticket assignment modals) ──
     loadUsers();
@@ -75,37 +70,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ── AUTHENTICATION ────────────────────────────────────────────
-
-function authenticate() {
-    const authInput = document.getElementById('authInput');
-    const authError = document.getElementById('authError');
-    const authBtn = document.getElementById('authBtn');
-
-    if (typeof CONFIG === 'undefined') {
-        showAdminToast('❌ Config not loaded. Refresh the page.');
-        return;
-    }
-
-    const pw = authInput ? authInput.value : '';
-
-    if (pw === CONFIG.ADMIN_PASSWORD) {
-        document.getElementById('authGate').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        if (authError) authError.style.display = 'none';
-        loadTickets();
-        loadUsers();
-        loadFeedback();
-    } else {
-        if (authError) authError.style.display = 'block';
-        if (authInput) {
-            authInput.value = '';
-            authInput.focus();
-            authInput.classList.add('shake');
-            setTimeout(() => authInput.classList.remove('shake'), 400);
-        }
-    }
-}
 
 // ── LOAD ALL TICKETS ──────────────────────────────────────────
 
