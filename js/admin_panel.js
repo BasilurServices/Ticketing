@@ -120,8 +120,13 @@ async function loadTickets(isForce = false) {
     } else {
         // Show loading state if forced
         if (tbody) {
-            tbody.innerHTML = '<tr><td colspan="9" class="empty-row">⏳ Syncing with server...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="empty-row">⏳ Syncing with server...</td></tr>';
         }
+    }
+
+    // Load feedback in parallel if not already loaded to show ratings in the table
+    if (allFeedback.length === 0) {
+        loadFeedback().then(() => renderTable());
     }
 
     try {
@@ -297,7 +302,7 @@ function renderTable() {
                     </td>
                 </tr>`;
         } else {
-            tbody.innerHTML = '<tr><td colspan="9" class="empty-row">📋 No tickets found matching your filters.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="empty-row">📋 No tickets found matching your filters.</td></tr>';
         }
         document.getElementById('ticketsPagination').style.display = 'none';
         return;
@@ -333,6 +338,7 @@ function renderTable() {
         <td><span class="priority-badge ${priorityClass[t.priority] || ''}">${escHtml(t.priority)}</span></td>
         <td><span class="status-chip ${statusChip[t.status] || 'chip-open'}">${escHtml(t.status)}</span></td>
         <td style="color:var(--text-light);font-size:12px;white-space:nowrap;">${formatDisplayDate(t.dateCreated)}</td>
+        <td style="font-weight:600;">${getRatingDisplay(t.ticketId)}</td>
         <td style="font-size:12px;">${t.assignedTechnician
             ? escHtml(t.assignedTechnician)
             : '<span style="color:var(--muted);font-style:italic;">Unassigned</span>'
@@ -421,6 +427,20 @@ function applyFilters() {
     });
 
     renderTable();
+}
+
+/**
+ * Returns a formatted string for the ticket rating (e.g., "⭐ 4.5")
+ */
+function getRatingDisplay(ticketId) {
+    if (!allFeedback || allFeedback.length === 0) return '<span style="color:var(--muted);">—</span>';
+    
+    const fb = allFeedback.find(f => f.ticketId === ticketId);
+    if (fb && fb.rating) {
+        return `<span style="color:var(--warning);">⭐ ${Number(fb.rating).toFixed(1)}</span>`;
+    }
+    
+    return '<span style="color:var(--muted);">—</span>';
 }
 
 // ── OPEN MODAL ────────────────────────────────────────────────
