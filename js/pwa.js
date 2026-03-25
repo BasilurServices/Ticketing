@@ -115,6 +115,11 @@ function showInstallPromotion() {
   banner.appendChild(btnGrp);
 
   document.body.appendChild(banner);
+
+  // Auto-hide the banner after 30 seconds
+  setTimeout(() => {
+    hideInstallPromotion();
+  }, 30000);
 }
 
 function hideInstallPromotion() {
