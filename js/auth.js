@@ -15,7 +15,7 @@
 function sessionSave(user) {
     const data = JSON.stringify(user);
     sessionStorage.setItem('bte_user', data);
-    setCookie('bte_user', encodeURIComponent(data), 30); // 30 Day persistent login
+    setCookie('bte_user', encodeURIComponent(data), 365); // 365 Day persistent login
 }
 
 /**
